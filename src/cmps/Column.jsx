@@ -6,7 +6,6 @@ import { DropZone } from "./DropZone";
 import Component from "./Component";
 
 const Column = ({ data, cmps, handleDrop, path, moveColumn, updateComponent, onSelect, selected }) => {
-  console.log('column data', data)
   const ref = useRef(null);
   const [{ handlerId }, drop] = useDrop({
     accept: COLUMN,
@@ -75,8 +74,6 @@ const Column = ({ data, cmps, handleDrop, path, moveColumn, updateComponent, onS
   });
 
   const renderComponent = (component, currentPath) => {
-    console.log('column cmps', cmps)
-    console.log('component', component)
     const compPath = currentPath.split('-');
     return (
       <Component
@@ -94,7 +91,6 @@ const Column = ({ data, cmps, handleDrop, path, moveColumn, updateComponent, onS
   drag(drop(ref));
 
   const style = translateStyle({ ...data.style });
-  console.log('style from column', style)
   return (
     <div
       ref={ref}

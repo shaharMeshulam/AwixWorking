@@ -53,32 +53,27 @@ export const reorderChildren = (children, splitDropZonePath, splitItemPath) => {
   return updatedChildren;
 };
 
-export const removeChildFromChildren = (children, splitItemPath) => {
-  if (splitItemPath.length === 1) {
-    const itemIndex = Number(splitItemPath[0]);
-    return remove(children, itemIndex);
+export const removeChildFromChildren = (layout, splitItemPath) => {
+  switch (splitItemPath.length) {
+    case 1:
+      layout.splice(splitItemPath[0], 1)
+      return layout
+
+    case 2:
+      layout[splitItemPath[0]].cmps.splice(splitItemPath[1], 1)
+      return layout
+
+    case 3:
+      layout[splitItemPath[0]].cmps[splitItemPath[1]].cmps.splice(splitItemPath[2], 1)
+      return layout
+
+    default:
+      layout[splitItemPath[0]].cmps[splitItemPath[1]].cmps[splitItemPath[2]].cmps.splice(splitItemPath[3], 1)
+      return layout
   }
-
-  const updatedChildren = [...children];
-
-  const curIndex = Number(splitItemPath.slice(0, 1));
-
-  // Update the specific node's children
-  const splitItemChildrenPath = splitItemPath.slice(1);
-  const nodeChildren = updatedChildren[curIndex];
-  updatedChildren[curIndex] = {
-    ...nodeChildren,
-    cmps: removeChildFromChildren(
-      nodeChildren.cmps,
-      splitItemChildrenPath
-    )
-  };
-
-  return updatedChildren;
 };
 
 export const addChildToChildren = (children, splitDropZonePath, item) => {
-  console.log('children', children)
   if (splitDropZonePath.length === 1) {
     const dropZoneIndex = Number(splitDropZonePath[0]);
     return insert(children, dropZoneIndex, item);
@@ -86,7 +81,8 @@ export const addChildToChildren = (children, splitDropZonePath, item) => {
 
   const updatedChildren = [...children];
 
-  const curIndex = Number(splitDropZonePath.slice(0, 1));
+  let curIndex = Number(splitDropZonePath[0]);
+  curIndex = (curIndex >= children.length) ? --curIndex : curIndex
 
   // Update the specific node's children
   const splitItemChildrenPath = splitDropZonePath.slice(1);
@@ -115,7 +111,6 @@ export const handleMoveSidebarColumnIntoParent = (
   layout,
   splitDropZonePath,
 ) => {
-  console.log("layout", layout)
   switch (splitDropZonePath.length) {
     case 1:
       const newLayoutStructure = {
@@ -123,28 +118,25 @@ export const handleMoveSidebarColumnIntoParent = (
         id: shortid.generate(),
         cmps: [_generateColumn()]
       };
-      console.log('case 1 addChildToChildren')
       return addChildToChildren(layout, splitDropZonePath, newLayoutStructure);
     case 2:
-      console.log('case 2 addChildToChildren')
       return addChildToChildren(layout, splitDropZonePath, _generateColumn());
   }
 }
 
-export const handleAddColumDataToRow = layout => {
+export const handleAddColumDataToRow = (layout, srcPath) => {
+  let parentPath = srcPath;
+  if (srcPath.length >= 2) parentPath = srcPath.slice(0, srcPath.length - 1)
   const layoutCopy = [...layout];
   const COLUMN_STRUCTURE = {
     type: COLUMN,
     id: shortid.generate(),
     cmps: []
   };
+  return layoutCopy.filter(section => {
+    return section.cmps.length
+  })
 
-  return layoutCopy.map(row => {
-    if (!row.cmps.length) {
-      row.cmps = [COLUMN_STRUCTURE];
-    }
-    return row;
-  });
 };
 
 export const handleMoveToDifferentParent = (
@@ -200,7 +192,7 @@ export const handleMoveToDifferentParent = (
 
   let updatedLayout = layout;
   updatedLayout = removeChildFromChildren(updatedLayout, splitItemPath);
-  updatedLayout = handleAddColumDataToRow(updatedLayout);
+  updatedLayout = handleAddColumDataToRow(updatedLayout, splitItemPath);
   updatedLayout = addChildToChildren(
     updatedLayout,
     splitDropZonePath,

@@ -2,6 +2,7 @@ import { MarginEdit } from "./MarginEdit";
 import { PaddingEdit } from "./PaddingEdit";
 import { uploadImg } from '../services/cloudinary-service';
 export function ColumnSectionEdit({ style, onUpdate }) {
+    debugger
     const onChange = ({ target }) => {
         const { name, value } = target;
         const newStyle = { ...style };
@@ -9,7 +10,6 @@ export function ColumnSectionEdit({ style, onUpdate }) {
         onUpdate(newStyle);
     }
     const onUploadImage=(url)=> {
-        console.log('url:',url)
         const newStyle = {...style};
         newStyle['backgroundImage'] = `url(${url})`;
         onUpdate(newStyle);

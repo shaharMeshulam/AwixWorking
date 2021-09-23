@@ -71,8 +71,6 @@ export function Section({ data, cmps, handleDrop, path, moveSection, moveColumn,
   drag(drop(ref));
 
   const renderColumn = (column, currentPath) => {
-    console.log('section path', currentPath)
-    console.log('section cmps', cmps)
     return (
       <Column
         key={column.id}

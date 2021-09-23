@@ -12,16 +12,15 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
       onDrop(data, item);
     },
     canDrop: (item, monitor) => {
-      console.log();
       const dropZonePath = data.path;
       const splitDropZonePath = dropZonePath.split("-");
       const itemPath = item.path;
 
       // sidebar items can always be dropped anywhere
       if (!itemPath) {
-        // if (data.childrenCount >= 3) {
-        //  return false;
-        // }
+        if (data.childrenCount >= 4) {
+          return false;
+        }
         return true;
       }
 
@@ -34,7 +33,7 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
       if (
         diffRow &&
         splitDropZonePath.length === 2 &&
-        data.childrenCount >= 3
+        data.childrenCount >= 4
       ) {
         return false;
       }

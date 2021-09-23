@@ -14,7 +14,6 @@ export function SideBar({ sideBarItems, selected, update }) {
     }
     const onUpdate = (style) => {
         update(selected, 'style', style);
-        // console.log('style:', style);
     }
     return (
         <div className="sideBar">

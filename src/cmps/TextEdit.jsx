@@ -3,7 +3,6 @@ export function TextEdit({ style, onUpdate }) {
     function onChange({ target }) {
         const { name, value } = target;
         const newStyle = { ...style, [name]:value };
-        console.log('newStyle:', newStyle);
         onUpdate(newStyle);
     }
     return (

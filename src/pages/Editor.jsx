@@ -35,8 +35,6 @@ export function Editor() {
         }));
     }, [layout]);
     const moveColumn = useCallback((currPath, dragPath) => {
-        debugger
-        // console.log('currPath:', currPath, 'dragPath:', dragPath)
         var currColumn;
         var dragColumn;
 
@@ -148,31 +146,26 @@ export function Editor() {
         // }));
     }, [layout]);
     const updateComponent = (comp, field, value) => {
-        switch (comp.type) {
-            case 'text':
-                // setComponents(update(components, {
-                //     [comp.id]: {
-                //         [field]: { $set: value }
-                //     }
-                // }))
+        debugger
+        const path = comp.path
+        const newLayout = { ...layout }
+        switch (comp.path.length) {
+            case 1:
+                newLayout.cmps[path[0]][field] = value
                 break;
-            case 'column':
-                setLayout(update(layout, {
-                    cmps: {
-                        [selected.path[0]]: {
-                            children: {
-                                [selected.path[1]]: {
-                                    [field]: { $set: value }
-                                }
-                            }
-                        }
-                    }
-                }))
+            case 2:
+                newLayout.cmps[path[0]].cmps[path[1]][field] = value
+                break;
+            case 3:
+                newLayout.cmps[path[0]].cmps[path[1]].cmps[path[2]][field] = value
+                break;
+            default:
+                newLayout.cmps[path[0]].cmps[path[1]].cmps[path[2]].cmps[path[3]][field] = value
+                break;
         }
+        setLayout(newLayout)
     }
     const onSelect = (type, path) => {
-
-        console.log('type', type, 'path', path);
         switch (type) {
             case COMPONENT:
                 if (path.length === 3) {
@@ -194,13 +187,9 @@ export function Editor() {
             default:
                 setSelected({ ...layout.cmps[+path[0]], path: path })
         }
-        console.log('selected', selected);
     }
     const handleDrop = useCallback(
         (dropZone, item) => {
-            console.log('dropZone', dropZone)
-            console.log('item', item)
-
             const splitDropZonePath = dropZone.path.split("-");
             const pathToDropZone = splitDropZonePath.slice(0, -1).join("-");
 
@@ -211,7 +200,6 @@ export function Editor() {
 
             if (item.type === SIDEBAR_ITEM_LAYOUT) {
                 if (item.component.type === COLUMN) {
-                    console.log('drop column, path: ' + splitDropZonePath);
 
                     setLayout({
                         ...layout,
@@ -220,7 +208,6 @@ export function Editor() {
                             splitDropZonePath
                         )
                     }
-
                     );
                     return;
                 } else {
@@ -337,17 +324,20 @@ export function Editor() {
         );
     };
     const getSelected = (s) => {
-        console.log('selecteddd',s);
         if (!s) return;
-        const path = s.path;
-            switch (s.type) {
-                case 1://Section
-                    break;
-                case 'column'://Column
-                    return layout[path[0]].children[path[1]];
+        const path = s.path
 
-            }
-        
+        switch (path.length) {
+            case 1:
+                return { ...layout.cmps[path[0]], path }
+            case 2:
+                return { ...layout.cmps[path[0]].cmps[path[1]], path }
+            case 3:
+                return { ...layout.cmps[path[0]].cmps[path[1]].cmps[path[2]], path }
+            default:
+                return { ...layout.cmps[path[0]].cmps[path[1]].cmps[path[2]].cmps[path[3]], path }
+        }
+
     }
     return (
         <DndProvider backend={HTML5Backend}>
