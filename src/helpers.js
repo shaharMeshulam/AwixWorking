@@ -1,5 +1,5 @@
 import shortid from "shortid";
-import { SECTION, COLUMN, COMPONENT } from "./constants";
+import { SECTION, COLUMN, COMPONENT, INNERSECTION } from "./constants";
 
 // a little function to help us with reordering the result
 export const reorder = (list, startIndex, endIndex) => {
@@ -189,10 +189,28 @@ export const handleMoveToDifferentParent = (
   return updatedLayout;
 };
 
+export const handleMoveSidebarInnerSectionIntoParent = (
+  layout,
+  splitDropZonePath,
+) => {
+
+  switch (splitDropZonePath.length) {
+
+    case 1:
+      const newLayoutStructure = {
+        type: SECTION,
+        id: shortid.generate(),
+        children: [_generateInnerSection()]
+      };
+      return addChildToChildren(layout, splitDropZonePath, newLayoutStructure);
+    case 2:
+      return addChildToChildren(layout, splitDropZonePath, _generateInnerSection());
+  }
+}
+
 export const handleMoveSidebarColumnIntoParent = (
   layout,
   splitDropZonePath,
-  column
 ) => {
   switch (splitDropZonePath.length) {
     case 1:
@@ -254,6 +272,18 @@ const _generateColumn = (item = null) => {
     type: COLUMN,
     id: shortid.generate(),
     children: item ? [item] : [],
+    style: {
+      padding: 10,
+      flexGrow: 1
+    }
+  }
+}
+
+const _generateInnerSection = (item = null) => {
+  return {
+    type: INNERSECTION,
+    id: shortid.generate(),
+    children: [_generateColumn(), _generateColumn(), _generateColumn()],
     style: {
       padding: 10,
       flexGrow: 1

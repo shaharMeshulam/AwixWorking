@@ -6,12 +6,13 @@ import { COMPONENT, SIDEBAR_ITEM, SECTION, COLUMN } from "../constants";
 const ACCEPTS = [SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN];
 
 export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) {
-  const [{ isOver, canDrop}, drop] = useDrop({
+  const [{ isOver, canDrop }, drop] = useDrop({
     accept,
     drop: (item, monitor) => {
       onDrop(data, item);
     },
     canDrop: (item, monitor) => {
+      console.log();
       const dropZonePath = data.path;
       const splitDropZonePath = dropZonePath.split("-");
       const itemPath = item.path;
@@ -40,6 +41,7 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
 
       // Invalid (Can't drop a parent element (row) into a child (column))
       const parentDropInChild = splitItemPath.length < splitDropZonePath.length;
+
       if (parentDropInChild) return false;
 
       // Current item can't possible move to it's own location
@@ -68,7 +70,7 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
   });
 
   const isActive = isOver || canDrop;
-  
+
   return (
     <div
       className={classNames(

@@ -11,7 +11,7 @@ import {
     handleMoveToDifferentParent,
     handleMoveSidebarComponentIntoParent,
     handleMoveSidebarColumnIntoParent,
-    handleRemoveItemFromLayout
+    handleMoveSidebarInnerSectionIntoParent
 } from "../helpers";
 import { Section } from "../cmps/Section";
 import { SideBar } from "../cmps/SideBar";
@@ -30,9 +30,33 @@ export function Editor() {
         }));
     }, [layout]);
     const moveColumn = useCallback((currPath, dragPath) => {
+        debugger
         // console.log('currPath:', currPath, 'dragPath:', dragPath)
-        const currColumn = layout[currPath[0]].children[currPath[1]];
-        if (currColumn.id === layout[dragPath[0]].children[dragPath[1]].id) return
+        var currColumn;
+        var dragColumn;
+
+        switch (currPath.length) {
+            case 2:
+                currColumn = layout[currPath[0]].children[currPath[1]];
+            default:
+                currColumn = layout[currPath[0]].children[currPath[1]].children[currPath[2]];
+        }
+
+        switch (dragPath.length) {
+            case 2:
+                dragColumn = layout[dragPath[0]].children[dragPath[1]];
+            default:
+                dragColumn = layout[dragPath[0]].children[dragPath[1]].children[dragPath[2]];
+        }
+
+        if (currColumn.id === dragColumn.id) return
+
+        if (currPath[0] === dragPath[0] && currPath[1] === dragPath[1]) {
+            const newLayout = [...layout]
+            newLayout.splice()
+            // setLayout()
+        }
+
         if (currPath[0] === dragPath[0]) {
             setLayout(update(layout, {
                 [currPath[0]]: {
@@ -162,17 +186,22 @@ export function Editor() {
             if (item.type === SIDEBAR_ITEM_LAYOUT) {
                 if (item.component.type === COLUMN) {
                     console.log('drop column, path: ' + splitDropZonePath);
-
                     setLayout(
                         handleMoveSidebarColumnIntoParent(
                             layout,
                             splitDropZonePath
                         )
                     );
-
-
                     return;
+                } else {
+                    setLayout(
+                        handleMoveSidebarInnerSectionIntoParent(
+                            layout,
+                            splitDropZonePath
+                        )
+                    )
                 }
+                return
             }
 
             // sidebar into

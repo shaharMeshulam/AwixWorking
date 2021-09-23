@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { SECTION, SIDEBAR_ITEM, COMPONENT, SIDEBAR_ITEM_LAYOUT } from "../constants.js";
+import { SECTION, SIDEBAR_ITEM, COMPONENT, SIDEBAR_ITEM_LAYOUT, INNERSECTION, COLUMN } from "../constants.js";
 import { DropZone } from "./DropZone";
 import Column from "./Column";
+import { InnerSection } from "./InnerSection.jsx";
 
 const style = {};
 export function Section({ data, components, handleDrop, path, moveSection, moveColumn, updateComponent, onSelect, selected }) {
@@ -81,39 +82,60 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
         updateComponent={updateComponent}
         onSelect={onSelect}
         selected={selected}
-        onClick={()=>onSelect('column',column)}
+        onClick={() => onSelect('column', column)}
       />
     );
   };
+  const renderInnerSection = (innerSection, currentPath) => {
+
+    return (
+      <InnerSection
+        key={innerSection.id}
+        data={innerSection}
+        components={components}
+        handleDrop={handleDrop}
+        path={currentPath}
+        moveColumn={moveColumn}
+        // moveinnerSection={moveinnerSection}
+        updateComponent={updateComponent}
+        onSelect={onSelect}
+        selected={selected}
+        onClick={() => onSelect('innersection', innerSection)}
+      />
+    );
+  };
+
+
 
   return (
     <div ref={ref} style={{ ...style, opacity }} className={`base draggable section`}>
       {data.id}
       <div className="columns">
-        {data.children.map((column, index) => {
+        {data.children.map((child, index) => {
           const currentPath = `${path}-${index}`;
-
           return (
-            <React.Fragment key={column.id}>
+            <React.Fragment key={child.id}>
               <DropZone
                 data={{
                   path: currentPath,
                   childrenCount: data.children.length,
                 }}
-                accept = {[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
+                accept={[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
                 onDrop={handleDrop}
                 className="horizontalDrag"
               />
-              {renderColumn(column, currentPath)}
+              {(child.type === COLUMN) && renderColumn(child, currentPath) || renderInnerSection(child, currentPath)}
             </React.Fragment>
           );
+
+
         })}
         <DropZone
           data={{
             path: `${path}-${data.children.length}`,
             childrenCount: data.children.length
           }}
-          accept = {[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
+          accept={[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
           onDrop={handleDrop}
           className="horizontalDrag"
           isLast
