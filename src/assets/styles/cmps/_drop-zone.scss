@@ -1,4 +1,4 @@
-.dropZone {
+.drop-zone {
     flex: 0 0 auto;
     height: 1px;
     
@@ -26,8 +26,8 @@
   
   
   
-  .dropZone.active,
-  .trashDropZone.active {
+  .drop-zone.active,
+  .trash-drop-zone.active {
     background: #00a2ff;
     transition: 100ms all;
   }

@@ -1,7 +1,9 @@
 export function Templates() {
     return (
-        <div>
-            Templates
-        </div>
+        <section className="templates">
+            <div>
+                Templates page
+            </div>
+        </section>
     )
 }

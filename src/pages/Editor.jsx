@@ -341,10 +341,10 @@ export function Editor() {
     }
     return (
         <DndProvider backend={HTML5Backend}>
-            <div className="body">
+            <div className="editor">
                 <SideBar sideBarItems={SIDEBAR_ITEMS} selected={getSelected(selected)} update={updateComponent} />
                 {/* <SideBar sideBarItems={SIDEBAR_ITEMS} update={updateComponent} /> */}
-                <div className="pageContainer">
+                <div className="page-container">
                     <div className="page">
                         {/* {JSON.stringify(layout.cmps)} */}
                         {layout.cmps.map((section, index) => {

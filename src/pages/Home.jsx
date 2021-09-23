@@ -1,4 +1,11 @@
+import Hero from '../assets/img/hero.gif'
 
 export function Home() {
-    return <div>arrived home</div>
+    return (
+        <section className="home">
+            <div className="top">
+                <img src={Hero} />
+            </div>
+        </section>
+    )
 }
