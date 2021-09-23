@@ -162,28 +162,27 @@ export function Editor() {
             // sidebar into
             if (item.type === SIDEBAR_ITEM) {
                 // 1. Move sidebar item into page
-                const newComponent = {
-                    id: shortid.generate(),
-                    ...item.component
-                };
-
                 if (item.component.type === COLUMN) {
                     console.log('drop column, path: ' + splitDropZonePath);
 
                     setLayout(
                         handleMoveSidebarColumnIntoParent(
                             layout,
-                            splitDropZonePath,
-                            newComponent
+                            splitDropZonePath
                         )
                     );
 
 
                     return;
                 }
+                const newComponent = {
+                    id: shortid.generate(),
+                    ...item.component
+                };
 
-                if(item.component.type === "innersection") {
-                    
+
+                if (item.component.type === "innersection") {
+
                 }
 
                 const newItem = {
