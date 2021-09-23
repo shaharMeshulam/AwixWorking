@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import update from 'immutability-helper';
-import { SIDEBAR_ITEMS, SIDEBAR_ITEM, COMPONENT, COLUMN, SECTION } from "../constants";
+import { SIDEBAR_ITEMS, SIDEBAR_ITEM, COMPONENT, COLUMN, SECTION, SIDEBAR_ITEM_LAYOUT } from "../constants";
 import { SideBarItem } from "../cmps/SideBarItem";
 import { DropZone } from "../cmps/DropZone";
 import shortid from "shortid";
@@ -159,9 +159,7 @@ export function Editor() {
                 newItem.children = item.children;
             }
 
-            // sidebar into
-            if (item.type === SIDEBAR_ITEM) {
-                // 1. Move sidebar item into page
+            if (item.type === SIDEBAR_ITEM_LAYOUT) {
                 if (item.component.type === COLUMN) {
                     console.log('drop column, path: ' + splitDropZonePath);
 
@@ -175,6 +173,11 @@ export function Editor() {
 
                     return;
                 }
+            }
+
+            // sidebar into
+            if (item.type === SIDEBAR_ITEM) {
+                // 1. Move sidebar item into page
                 const newComponent = {
                     id: shortid.generate(),
                     ...item.component
@@ -292,7 +295,7 @@ export function Editor() {
                                         }}
                                         onDrop={handleDrop}
                                         path={currentPath}
-                                        accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, "innersection"]}
+                                        accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, SIDEBAR_ITEM_LAYOUT]}
                                     />
                                     {renderSection(section, currentPath)}
                                 </React.Fragment>
@@ -302,8 +305,9 @@ export function Editor() {
                             data={{
                                 path: `${layout.length}`,
                                 childrenCount: layout.length
+
                             }}
-                            accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, "innersection"]}
+                            accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, SIDEBAR_ITEM_LAYOUT]}
                             onDrop={handleDrop}
                             isLast
                         />

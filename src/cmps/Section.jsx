@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { SECTION } from "../constants.js";
+import { SECTION, SIDEBAR_ITEM, COMPONENT, SIDEBAR_ITEM_LAYOUT } from "../constants.js";
 import { DropZone } from "./DropZone";
 import Column from "./Column";
 
@@ -100,6 +100,7 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
                   path: currentPath,
                   childrenCount: data.children.length,
                 }}
+                accept = {[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
                 onDrop={handleDrop}
                 className="horizontalDrag"
               />
@@ -112,6 +113,7 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
             path: `${path}-${data.children.length}`,
             childrenCount: data.children.length
           }}
+          accept = {[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
           onDrop={handleDrop}
           className="horizontalDrag"
           isLast
