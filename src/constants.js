@@ -2,6 +2,7 @@ import shortid from "shortid";
 
 export const SIDEBAR_ITEM = "sidebarItem";
 export const SECTION = "section";
+export const INNERSECTION = "innersection";
 export const COLUMN = "column";
 export const COMPONENT = "component";
 
@@ -13,6 +14,15 @@ export const SIDEBAR_ITEMS = [
     component: {
       type: SECTION,
       content: 'Some section'
+    }
+  },
+  {
+    id: shortid.generate(),
+    type: INNERSECTION,
+    children: [],
+    component: {
+      type: INNERSECTION,
+      content: 'Some innersection'
     }
   },
   {
