@@ -1,5 +1,6 @@
 import shortid from "shortid";
 
+export const SIDEBAR_ITEM_INNERSECTION = "innersection"
 export const SIDEBAR_ITEM_LAYOUT = "sidebarLayout"
 export const SIDEBAR_ITEM = "sidebarItem";
 export const SECTION = "section";
