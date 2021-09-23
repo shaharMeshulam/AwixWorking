@@ -10,6 +10,7 @@ import {
     handleMoveWithinParent,
     handleMoveToDifferentParent,
     handleMoveSidebarComponentIntoParent,
+    handleMoveSidebarColumnIntoParent,
     handleRemoveItemFromLayout
 } from "../helpers";
 import { Section } from "../cmps/Section";
@@ -165,6 +166,26 @@ export function Editor() {
                     id: shortid.generate(),
                     ...item.component
                 };
+
+                if (item.component.type === COLUMN) {
+                    console.log('drop column, path: ' + splitDropZonePath);
+
+                    setLayout(
+                        handleMoveSidebarColumnIntoParent(
+                            layout,
+                            splitDropZonePath,
+                            newComponent
+                        )
+                    );
+
+
+                    return;
+                }
+
+                if(item.component.type === "innersection") {
+                    
+                }
+
                 const newItem = {
                     id: newComponent.id,
                     type: COMPONENT
@@ -272,6 +293,7 @@ export function Editor() {
                                         }}
                                         onDrop={handleDrop}
                                         path={currentPath}
+                                        accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, "innersection"]}
                                     />
                                     {renderSection(section, currentPath)}
                                 </React.Fragment>
@@ -282,6 +304,7 @@ export function Editor() {
                                 path: `${layout.length}`,
                                 childrenCount: layout.length
                             }}
+                            accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, "innersection"]}
                             onDrop={handleDrop}
                             isLast
                         />

@@ -5,9 +5,9 @@ import { COMPONENT, SIDEBAR_ITEM, SECTION, COLUMN } from "../constants";
 
 const ACCEPTS = [SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN];
 
-export function DropZone({ data, onDrop, isLast, className }) {
+export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) {
   const [{ isOver, canDrop}, drop] = useDrop({
-    accept: ACCEPTS,
+    accept,
     drop: (item, monitor) => {
       onDrop(data, item);
     },

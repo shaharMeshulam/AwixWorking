@@ -8,20 +8,20 @@ export const COMPONENT = "component";
 export const SIDEBAR_ITEMS = [
   {
     id: shortid.generate(),
-    type: SECTION,
-    children: [],
+    type: SIDEBAR_ITEM,
     component: {
       type: SECTION,
-      content: 'Some section'
+      children: [],
+      style: {},
     }
   },
   {
     id: shortid.generate(),
-    type: COLUMN,
-    children: [],
+    type: SIDEBAR_ITEM,
     component: {
       type: COLUMN,
-      content: 'Some column'
+      children: [],
+      style: {},
     }
   },
   {
