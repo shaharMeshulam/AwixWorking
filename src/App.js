@@ -1,12 +1,10 @@
 import './App.css';
-import { Editor2 } from './test2/pages/Editor2';
-import { Editor3 } from './test3/pages/Editor3';
-import { Editor4 } from './test4/pages/Editor4';
+import { Editor } from './pages/Editor';
 
 function App() {
   return (
     <div className="App">
-      <Editor4/>
+      <Editor/>
     </div>
   );
 }

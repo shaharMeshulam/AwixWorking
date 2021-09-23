@@ -1,6 +1,6 @@
 import { MarginEdit } from "./MarginEdit";
 import { PaddingEdit } from "./PaddingEdit";
-import { uploadImg } from '../../services/cloudinary-service';
+import { uploadImg } from '../services/cloudinary-service';
 export function ColumnSectionEdit({ style, onUpdate }) {
     const onChange = ({ target }) => {
         const { name, value } = target;
