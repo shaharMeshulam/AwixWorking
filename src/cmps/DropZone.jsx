@@ -74,7 +74,7 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
   return (
     <div
       className={classNames(
-        "dropZone",
+        "drop-zone",
         { active: isActive, isLast },
         className
       )}

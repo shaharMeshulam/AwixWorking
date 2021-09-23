@@ -1,6 +1,33 @@
-.header{
-    background-color: #f6f6f6;
+.header {
+    padding-right: 35px;
+    padding-left: 35px;
+    background-color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-size: 0.9375rem;
+    border-bottom: 1px solid hsla(0, 0%, 78.4%, 0.8);
+    height: 65px;
+    box-shadow: 0 0px 8px 0 #00000036;
+    z-index: 5;
+
+    .links {
+        height: 100%;
+        .link {
+            height: 100%;
+            &:not(:last-child) {
+                margin-inline-end: 25px;
+            }
+        }
+        a {
+            text-decoration: none;
+            font-family: montserrat;
+            cursor: pointer;
+            color: #293241;
+        }
+    }
 }
-img{
+img {
     mix-blend-mode: darken;
 }

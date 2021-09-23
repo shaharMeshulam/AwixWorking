@@ -17,7 +17,7 @@ export function SideBar({ sideBarItems, selected, update }) {
         // console.log('style:', style);
     }
     return (
-        <div className="sideBar">
+        <div className="side-bar">
             <button onClick={onAddClick}>Add</button>
             <button onClick={onEditClick}>Edit</button>
             {!isEdit &&

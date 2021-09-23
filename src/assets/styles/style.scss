@@ -6,6 +6,12 @@
 @import "basics/helpers";
 @import "basics/base";
 
+//PAGES
+@import "pages/home";
+@import "pages/editor";
+@import "pages/about";
+@import "pages/templates";
+
 // COMPONENTS
 @import "cmps/drop-zone";
 @import "cmps/section";
