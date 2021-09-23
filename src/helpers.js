@@ -43,8 +43,8 @@ export const reorderChildren = (children, splitDropZonePath, splitItemPath) => {
   const nodeChildren = updatedChildren[curIndex];
   updatedChildren[curIndex] = {
     ...nodeChildren,
-    children: reorderChildren(
-      nodeChildren.children,
+    cmps: reorderChildren(
+      nodeChildren.cmps,
       splitDropZoneChildrenPath,
       splitItemChildrenPath
     )
@@ -68,8 +68,8 @@ export const removeChildFromChildren = (children, splitItemPath) => {
   const nodeChildren = updatedChildren[curIndex];
   updatedChildren[curIndex] = {
     ...nodeChildren,
-    children: removeChildFromChildren(
-      nodeChildren.children,
+    cmps: removeChildFromChildren(
+      nodeChildren.cmps,
       splitItemChildrenPath
     )
   };
@@ -78,6 +78,7 @@ export const removeChildFromChildren = (children, splitItemPath) => {
 };
 
 export const addChildToChildren = (children, splitDropZonePath, item) => {
+  console.log('children', children)
   if (splitDropZonePath.length === 1) {
     const dropZoneIndex = Number(splitDropZonePath[0]);
     return insert(children, dropZoneIndex, item);
@@ -92,8 +93,8 @@ export const addChildToChildren = (children, splitDropZonePath, item) => {
   const nodeChildren = updatedChildren[curIndex];
   updatedChildren[curIndex] = {
     ...nodeChildren,
-    children: addChildToChildren(
-      nodeChildren.children,
+    cmps: addChildToChildren(
+      nodeChildren.cmps,
       splitItemChildrenPath,
       item
     )
@@ -110,17 +111,37 @@ export const handleMoveWithinParent = (
   return reorderChildren(layout, splitDropZonePath, splitItemPath);
 };
 
+export const handleMoveSidebarColumnIntoParent = (
+  layout,
+  splitDropZonePath,
+) => {
+  console.log("layout", layout)
+  switch (splitDropZonePath.length) {
+    case 1:
+      const newLayoutStructure = {
+        type: SECTION,
+        id: shortid.generate(),
+        cmps: [_generateColumn()]
+      };
+      console.log('case 1 addChildToChildren')
+      return addChildToChildren(layout, splitDropZonePath, newLayoutStructure);
+    case 2:
+      console.log('case 2 addChildToChildren')
+      return addChildToChildren(layout, splitDropZonePath, _generateColumn());
+  }
+}
+
 export const handleAddColumDataToRow = layout => {
   const layoutCopy = [...layout];
   const COLUMN_STRUCTURE = {
     type: COLUMN,
     id: shortid.generate(),
-    children: []
+    cmps: []
   };
 
   return layoutCopy.map(row => {
-    if (!row.children.length) {
-      row.children = [COLUMN_STRUCTURE];
+    if (!row.cmps.length) {
+      row.cmps = [COLUMN_STRUCTURE];
     }
     return row;
   });
@@ -136,7 +157,7 @@ export const handleMoveToDifferentParent = (
   const COLUMN_STRUCTURE = {
     type: COLUMN,
     id: shortid.generate(),
-    children: [item]
+    cmps: [item]
   };
 
   const SECTION_STRUCTURE = {
@@ -150,13 +171,13 @@ export const handleMoveToDifferentParent = (
       if (item.type === COLUMN) {
         newLayoutStructure = {
           ...SECTION_STRUCTURE,
-          children: [item]
+          cmps: [item]
         };
       } else {
         // moving component outside into new row made on the fly
         newLayoutStructure = {
           ...SECTION_STRUCTURE,
-          children: [COLUMN_STRUCTURE]
+          cmps: [COLUMN_STRUCTURE]
         };
       }
       break;
@@ -200,28 +221,11 @@ export const handleMoveSidebarInnerSectionIntoParent = (
       const newLayoutStructure = {
         type: SECTION,
         id: shortid.generate(),
-        children: [_generateInnerSection()]
+        cmps: [_generateInnerSection()]
       };
       return addChildToChildren(layout, splitDropZonePath, newLayoutStructure);
     case 2:
       return addChildToChildren(layout, splitDropZonePath, _generateInnerSection());
-  }
-}
-
-export const handleMoveSidebarColumnIntoParent = (
-  layout,
-  splitDropZonePath,
-) => {
-  switch (splitDropZonePath.length) {
-    case 1:
-      const newLayoutStructure = {
-        type: SECTION,
-        id: shortid.generate(),
-        children: [_generateColumn()]
-      };
-      return addChildToChildren(layout, splitDropZonePath, newLayoutStructure);
-    case 2:
-      return addChildToChildren(layout, splitDropZonePath, _generateColumn());
   }
 }
 
@@ -232,13 +236,14 @@ export const handleMoveSidebarComponentIntoParent = (
 ) => {
   let newLayoutStructure;
   switch (splitDropZonePath.length) {
-    case 1:
+    case 1: {
       newLayoutStructure = {
         type: SECTION,
         id: shortid.generate(),
-        children: [_generateColumn(item)]
+        cmps: [_generateColumn(item)]
       };
       break;
+    }
     case 2: {
       newLayoutStructure = _generateColumn(item);
       break;
@@ -271,7 +276,7 @@ const _generateColumn = (item = null) => {
   return {
     type: COLUMN,
     id: shortid.generate(),
-    children: item ? [item] : [],
+    cmps: item ? [item] : [],
     style: {
       padding: 10,
       flexGrow: 1
@@ -283,7 +288,7 @@ const _generateInnerSection = (item = null) => {
   return {
     type: INNERSECTION,
     id: shortid.generate(),
-    children: [_generateColumn(), _generateColumn(), _generateColumn()],
+    cmps: [_generateColumn(), _generateColumn(), _generateColumn()],
     style: {
       padding: 10,
       flexGrow: 1

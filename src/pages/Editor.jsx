@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import update from 'immutability-helper';
-import { SIDEBAR_ITEMS, SIDEBAR_ITEM, COMPONENT, COLUMN, SECTION, SIDEBAR_ITEM_LAYOUT } from "../constants";
+import { SIDEBAR_ITEMS, SIDEBAR_ITEM, COMPONENT, COLUMN, SECTION, SIDEBAR_ITEM_LAYOUT, INNERSECTION } from "../constants";
 import { SideBarItem } from "../cmps/SideBarItem";
 import { DropZone } from "../cmps/DropZone";
 import shortid from "shortid";
@@ -17,16 +17,21 @@ import { Section } from "../cmps/Section";
 import { SideBar } from "../cmps/SideBar";
 
 export function Editor() {
-    const [layout, setLayout] = useState([]);
-    const [components, setComponents] = useState([]);
+    const [layout, setLayout] = useState({
+        cmps: [],
+        style: {}
+    });
+    // const [components, setComponents] = useState([]);
     const [selected, setSelected] = useState(null);
     const moveSection = useCallback((dragIndex, hoverIndex) => {
-        const dragSection = layout[dragIndex];
+        const dragSection = layout.layout[dragIndex];
         setLayout(update(layout, {
-            $splice: [
-                [dragIndex, 1],
-                [hoverIndex, 0, dragSection],
-            ],
+            cmps: {
+                $splice: [
+                    [dragIndex, 1],
+                    [hoverIndex, 0, dragSection],
+                ],
+            }
         }));
     }, [layout]);
     const moveColumn = useCallback((currPath, dragPath) => {
@@ -59,19 +64,21 @@ export function Editor() {
 
         if (currPath[0] === dragPath[0]) {
             setLayout(update(layout, {
-                [currPath[0]]: {
-                    children: {
-                        $splice: [
-                            [currPath[1], 1],
-                            [dragPath[1], 0, currColumn],
-                        ],
-                    }
-                    // [dragPath[0]]: {
-                    //     $splice: [
-                    //         [dragPath[1], 0, currColumn],
-                    //     ],
-                    // }
-                },
+                cmps: {
+                    [currPath[0]]: {
+                        children: {
+                            $splice: [
+                                [currPath[1], 1],
+                                [dragPath[1], 0, currColumn],
+                            ],
+                        }
+                        // [dragPath[0]]: {
+                        //     $splice: [
+                        //         [dragPath[1], 0, currColumn],
+                        //     ],
+                        // }
+                    },
+                }
                 // [dragPath[0]]: {
                 //     children: {
                 //         $splice: [
@@ -87,16 +94,18 @@ export function Editor() {
             }));
         } else {
             setLayout(update(layout, {
-                [currPath[0]]: {
-                    children: {
-                        $splice: [
-                            [currPath[1], 1],
-                        ],
-                    }
-                },
-                [dragPath[0]]: {
-                    children: {
-                        $splice: [[dragPath[1], 0, currColumn]],
+                cmps: {
+                    [currPath[0]]: {
+                        children: {
+                            $splice: [
+                                [currPath[1], 1],
+                            ],
+                        }
+                    },
+                    [dragPath[0]]: {
+                        children: {
+                            $splice: [[dragPath[1], 0, currColumn]],
+                        }
                     }
                 }
             }))
@@ -141,34 +150,51 @@ export function Editor() {
     const updateComponent = (comp, field, value) => {
         switch (comp.type) {
             case 'text':
-                setComponents(update(components, {
-                    [comp.id]: {
-                        [field]: { $set: value }
-                    }
-                }))
+                // setComponents(update(components, {
+                //     [comp.id]: {
+                //         [field]: { $set: value }
+                //     }
+                // }))
                 break;
             case 'column':
                 setLayout(update(layout, {
-                    [selected.path[0]]: {
-                        children: {
-                            [selected.path[1]]: {
-                                [field]: { $set: value }
+                    cmps: {
+                        [selected.path[0]]: {
+                            children: {
+                                [selected.path[1]]: {
+                                    [field]: { $set: value }
+                                }
                             }
                         }
                     }
                 }))
         }
     }
-    const onSelect = (type, idOrPath) => {
-        switch (type) {
-            case 'component':
-                setSelected(components[idOrPath]);
-                break;
-            case 'column':
-                setSelected({ ...layout[idOrPath[0]].children[idOrPath[1]], path: idOrPath });
-                break;
-        }
+    const onSelect = (type, path) => {
 
+        console.log('type', type, 'path', path);
+        switch (type) {
+            case COMPONENT:
+                if (path.length === 3) {
+                    setSelected({ ...layout.cmps[+path[0]].cmps[+path[1]].cmps[+path[2]], path: path });
+                } else {
+                    setSelected({ ...layout.cmps[+path[0]].cmps[+path[1]].cmps[+path[2]].cmps[+path[3]], path: path });
+                }
+                break;
+            case COLUMN:
+                if (path.length === 2) {
+                    setSelected({ ...layout.cmps[+path[0]].cmps[+path[1]], path: path });
+                } else {
+                    setSelected({ ...layout.cmps[+path[0]].cmps[+path[1]].cmps[+path[2]], path: path });
+                }
+                break;
+            case INNERSECTION:
+                setSelected({ ...layout.cmps[+path[0]].cmps[+path[1]], path: path });
+                break;
+            default:
+                setSelected({ ...layout.cmps[+path[0]], path: path })
+        }
+        console.log('selected', selected);
     }
     const handleDrop = useCallback(
         (dropZone, item) => {
@@ -178,19 +204,23 @@ export function Editor() {
             const splitDropZonePath = dropZone.path.split("-");
             const pathToDropZone = splitDropZonePath.slice(0, -1).join("-");
 
-            const newItem = { id: item.id, type: item.type };
+            const newItem = { id: item.id, type: item.type, component: item.component };
             if (item.type === COLUMN || item.type === SECTION) {
-                newItem.children = item.children;
+                newItem.cmps = item.cmps;
             }
 
             if (item.type === SIDEBAR_ITEM_LAYOUT) {
                 if (item.component.type === COLUMN) {
                     console.log('drop column, path: ' + splitDropZonePath);
-                    setLayout(
-                        handleMoveSidebarColumnIntoParent(
-                            layout,
+
+                    setLayout({
+                        ...layout,
+                        cmps: handleMoveSidebarColumnIntoParent(
+                            layout.cmps,
                             splitDropZonePath
                         )
+                    }
+
                     );
                     return;
                 } else {
@@ -219,18 +249,22 @@ export function Editor() {
 
                 const newItem = {
                     id: newComponent.id,
-                    type: COMPONENT
+                    type: COMPONENT,
+                    component: item.component
                 };
-                setComponents({
-                    ...components,
-                    [newComponent.id]: newComponent
-                });
+                // setComponents({
+                //     ...components,
+                //     [newComponent.id]: newComponent
+                // });
                 setLayout(
-                    handleMoveSidebarComponentIntoParent(
-                        layout,
-                        splitDropZonePath,
-                        newItem
-                    )
+                    {
+                        ...layout,
+                        cmps: handleMoveSidebarComponentIntoParent(
+                            layout.cmps,
+                            splitDropZonePath,
+                            newItem
+                        )
+                    }
                 );
                 return;
             }
@@ -243,8 +277,10 @@ export function Editor() {
             if (splitItemPath.length === splitDropZonePath.length) {
                 // 2.a. move within parent
                 if (pathToItem === pathToDropZone) {
-                    setLayout(
-                        handleMoveWithinParent(layout, splitDropZonePath, splitItemPath)
+                    setLayout({
+                        ...layout,
+                        cmps: handleMoveWithinParent(layout.cmps, splitDropZonePath, splitItemPath)
+                    }
                     );
                     return;
                 }
@@ -252,27 +288,37 @@ export function Editor() {
                 // 2.b. OR move different parent
                 // TODO FIX columns. item includes children
                 setLayout(
-                    handleMoveToDifferentParent(
-                        layout,
-                        splitDropZonePath,
-                        splitItemPath,
-                        newItem
-                    )
+                    {
+                        ...layout,
+                        cmps: handleMoveToDifferentParent(
+                            layout.cmps,
+                            splitDropZonePath,
+                            splitItemPath,
+                            newItem
+                        )
+
+                    }
                 );
                 return;
             }
 
             // 3. Move + Create
             setLayout(
-                handleMoveToDifferentParent(
-                    layout,
-                    splitDropZonePath,
-                    splitItemPath,
-                    newItem
-                )
+
+                {
+                    ...layout,
+                    cmps: handleMoveToDifferentParent(
+                        layout.cmps,
+                        splitDropZonePath,
+                        splitItemPath,
+                        newItem
+                    )
+
+                }
+
             );
         },
-        [layout, components]
+        [layout]
     );
     const renderSection = (section, currentPath) => {
         return (
@@ -280,7 +326,7 @@ export function Editor() {
                 key={section.id}
                 data={section}
                 handleDrop={handleDrop}
-                components={components}
+                cmps={layout.cmps[currentPath]}
                 path={currentPath}
                 moveSection={moveSection}
                 moveColumn={moveColumn}
@@ -291,9 +337,9 @@ export function Editor() {
         );
     };
     const getSelected = (s) => {
+        console.log('selecteddd',s);
         if (!s) return;
         const path = s.path;
-        if (path) {
             switch (s.type) {
                 case 1://Section
                     break;
@@ -301,18 +347,17 @@ export function Editor() {
                     return layout[path[0]].children[path[1]];
 
             }
-        } else {
-            //component
-            return components[s.id];
-        }
+        
     }
     return (
         <DndProvider backend={HTML5Backend}>
             <div className="body">
                 <SideBar sideBarItems={SIDEBAR_ITEMS} selected={getSelected(selected)} update={updateComponent} />
+                {/* <SideBar sideBarItems={SIDEBAR_ITEMS} update={updateComponent} /> */}
                 <div className="pageContainer">
                     <div className="page">
-                        {layout.map((section, index) => {
+                        {/* {JSON.stringify(layout.cmps)} */}
+                        {layout.cmps.map((section, index) => {
                             const currentPath = `${index}`;
 
                             return (
@@ -332,7 +377,7 @@ export function Editor() {
                         })}
                         <DropZone
                             data={{
-                                path: `${layout.length}`,
+                                path: `${layout.cmps.length}`,
                                 childrenCount: layout.length
 
                             }}

@@ -5,7 +5,8 @@ import { COLUMN, COMPONENT, SIDEBAR_ITEM } from "../constants";
 import { DropZone } from "./DropZone";
 import Component from "./Component";
 
-const Column = ({ data, components, handleDrop, path, moveColumn, updateComponent, onSelect, selected }) => {
+const Column = ({ data, cmps, handleDrop, path, moveColumn, updateComponent, onSelect, selected }) => {
+  console.log('column data', data)
   const ref = useRef(null);
   const [{ handlerId }, drop] = useDrop({
     accept: COLUMN,
@@ -65,7 +66,7 @@ const Column = ({ data, components, handleDrop, path, moveColumn, updateComponen
     item: {
       type: COLUMN,
       id: data.id,
-      children: data.children,
+      cmps: data.cmps,
       path
     },
     collect: (monitor) => ({
@@ -74,11 +75,13 @@ const Column = ({ data, components, handleDrop, path, moveColumn, updateComponen
   });
 
   const renderComponent = (component, currentPath) => {
+    console.log('column cmps', cmps)
+    console.log('component', component)
+    const compPath = currentPath.split('-');
     return (
       <Component
         key={component.id}
         data={component}
-        components={components}
         path={currentPath}
         updateComponent={updateComponent}
         select={onSelect}
@@ -100,7 +103,7 @@ const Column = ({ data, components, handleDrop, path, moveColumn, updateComponen
       onClick={() => onSelect('column', path.split('-'))}
     >
       {data.id}
-      {data.children.map((component, index) => {
+      {data.cmps.map((component, index) => {
         const currentPath = `${path}-${index}`;
 
         return (
@@ -108,7 +111,7 @@ const Column = ({ data, components, handleDrop, path, moveColumn, updateComponen
             <DropZone
               data={{
                 path: currentPath,
-                childrenCount: data.children.length
+                childrenCount: data.cmps.length
               }}
               onDrop={handleDrop}
               accept={[COMPONENT, SIDEBAR_ITEM]}
@@ -119,8 +122,8 @@ const Column = ({ data, components, handleDrop, path, moveColumn, updateComponen
       })}
       <DropZone
         data={{
-          path: `${path}-${data.children.length}`,
-          childrenCount: data.children.length
+          path: `${path}-${data.cmps.length}`,
+          childrenCount: data.cmps.length
         }}
         onDrop={handleDrop}
         isLast

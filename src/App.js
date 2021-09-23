@@ -9,13 +9,15 @@ import {
   BrowserRouter as Router,
   Switch
 } from "react-router-dom";
+import { Templates } from './pages/Templates';
 
 function App() {
   return (
     <div className="App">
       <Router>
-      <Header />
+        <Header />
         <Switch>
+          <Route path="/templates" component={Templates} />
           <Route path="/editor" component={Editor} />
           <Route path="/about" component={About} />
           <Route path="/" component={Home} />

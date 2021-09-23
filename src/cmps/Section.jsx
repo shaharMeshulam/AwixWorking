@@ -6,7 +6,7 @@ import Column from "./Column";
 import { InnerSection } from "./InnerSection.jsx";
 
 const style = {};
-export function Section({ data, components, handleDrop, path, moveSection, moveColumn, updateComponent, onSelect, selected }) {
+export function Section({ data, cmps, handleDrop, path, moveSection, moveColumn, updateComponent, onSelect, selected }) {
   const ref = useRef(null);
   const [{ handlerId }, drop] = useDrop({
     accept: SECTION,
@@ -15,43 +15,43 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item, monitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.path;
-      const hoverIndex = path;
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      // Get vertical middle
-      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-      // Time to actually perform the action
-      moveSection(dragIndex, hoverIndex);
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.path = hoverIndex;
-    },
+    // hover(item, monitor) {
+    //   if (!ref.current) {
+    //     return;
+    //   }
+    //   const dragIndex = item.path;
+    //   const hoverIndex = path;
+    //   // Don't replace items with themselves
+    //   if (dragIndex === hoverIndex) {
+    //     return;
+    //   }
+    //   // Determine rectangle on screen
+    //   const hoverBoundingRect = ref.current?.getBoundingClientRect();
+    //   // Get vertical middle
+    //   const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+    //   // Determine mouse position
+    //   const clientOffset = monitor.getClientOffset();
+    //   // Get pixels to the top
+    //   const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+    //   // Only perform the move when the mouse has crossed half of the items height
+    //   // When dragging downwards, only move when the cursor is below 50%
+    //   // When dragging upwards, only move when the cursor is above 50%
+    //   // Dragging downwards
+    //   if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+    //     return;
+    //   }
+    //   // Dragging upwards
+    //   if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+    //     return;
+    //   }
+    //   // Time to actually perform the action
+    //   moveSection(dragIndex, hoverIndex);
+    //   // Note: we're mutating the monitor item here!
+    //   // Generally it's better to avoid mutations,
+    //   // but it's good here for the sake of performance
+    //   // to avoid expensive index searches.
+    //   item.path = hoverIndex;
+    // },
   });
   const [{ isDragging }, drag] = useDrag({
     type: SECTION,
@@ -71,11 +71,13 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
   drag(drop(ref));
 
   const renderColumn = (column, currentPath) => {
+    console.log('section path', currentPath)
+    console.log('section cmps', cmps)
     return (
       <Column
         key={column.id}
         data={column}
-        components={components}
+        cmps={column.cmps}
         handleDrop={handleDrop}
         path={currentPath}
         moveColumn={moveColumn}
@@ -92,7 +94,7 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
       <InnerSection
         key={innerSection.id}
         data={innerSection}
-        components={components}
+        components={cmps}
         handleDrop={handleDrop}
         path={currentPath}
         moveColumn={moveColumn}
@@ -111,16 +113,16 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
     <div ref={ref} style={{ ...style, opacity }} className={`base draggable section`}>
       {data.id}
       <div className="columns">
-        {data.children.map((child, index) => {
+        {data.cmps.map((child, index) => {
           const currentPath = `${path}-${index}`;
           return (
             <React.Fragment key={child.id}>
               <DropZone
                 data={{
                   path: currentPath,
-                  childrenCount: data.children.length,
+                  childrenCount: data.cmps.length,
                 }}
-                accept={[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
+                accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, SIDEBAR_ITEM_LAYOUT]}
                 onDrop={handleDrop}
                 className="horizontalDrag"
               />
@@ -132,10 +134,10 @@ export function Section({ data, components, handleDrop, path, moveSection, moveC
         })}
         <DropZone
           data={{
-            path: `${path}-${data.children.length}`,
-            childrenCount: data.children.length
+            path: `${path}-${data.cmps.length}`,
+            childrenCount: data.cmps.length
           }}
-          accept={[SIDEBAR_ITEM, COMPONENT, SECTION, SIDEBAR_ITEM_LAYOUT]}
+          accept={[SIDEBAR_ITEM, COMPONENT, SECTION, COLUMN, SIDEBAR_ITEM_LAYOUT]}
           onDrop={handleDrop}
           className="horizontalDrag"
           isLast
