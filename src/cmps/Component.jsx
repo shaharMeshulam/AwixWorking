@@ -3,7 +3,7 @@ import { useDrag } from "react-dnd";
 import { COMPONENT } from "../constants";
 import { Text } from "./Text";
 
-const Component = ({ data, path, updateComponent, select }) => {
+const Component = ({ data, path, updateComponent, select, selected }) => {
   const ref = useRef(null);
 
   const [{ isDragging }, drag] = useDrag({
@@ -20,16 +20,18 @@ const Component = ({ data, path, updateComponent, select }) => {
   const component = data.component;
 
   const KeysToComponentMap = {
-    text: Text
+    text:Text,
+
   };
 
   const onSelect = (ev) => {
+    console.log('component', path.split('-'));
     ev.stopPropagation();
     select('component', path.split('-'));
   }
 
   const update = (field, value) => {
-    updateComponent(component.id, field, value);
+    updateComponent(selected, field, value);
   }
 
   const renderer = (component) => {
@@ -39,7 +41,7 @@ const Component = ({ data, path, updateComponent, select }) => {
         {
           id: component.id,
           key: component.id,
-          content: component.content,
+          data: component.data,
           style: component.style,
           update
         },
@@ -54,9 +56,9 @@ const Component = ({ data, path, updateComponent, select }) => {
       className="component draggable"
       onClick={onSelect}
     >
-      <div>{data.id}</div>
-      <div>{component.type}</div>
-      <div>{component.content}</div>
+      {/* <div>{data.id}</div> */}
+      {/* <div>{component.type}</div> */}
+      {/* <div>{component.content}</div> */}
       {renderer(component)}
     </div>
   );

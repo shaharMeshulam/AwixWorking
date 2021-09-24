@@ -157,7 +157,7 @@ export function Editor() {
                 newLayout.cmps[path[0]].cmps[path[1]][field] = value
                 break;
             case 3:
-                newLayout.cmps[path[0]].cmps[path[1]].cmps[path[2]][field] = value
+                newLayout.cmps[path[0]].cmps[path[1]].cmps[path[2]].component[field] = value
                 break;
             default:
                 newLayout.cmps[path[0]].cmps[path[1]].cmps[path[2]].cmps[path[3]][field] = value

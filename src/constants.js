@@ -31,8 +31,8 @@ export const SIDEBAR_ITEMS = [
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "text",
-      content: "Some text",
+      type: 'text',
+      data: { txt: 'Some text' },
       style: {
         fontSize: 16,
         color: '#000000',
@@ -44,40 +44,40 @@ export const SIDEBAR_ITEMS = [
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "input",
-      content: "Some input"
+      type: 'input',
+      data: { placeholder: 'placeholder' }
     }
   },
   {
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "name",
-      content: "Some name"
+      type: 'name',
+      content: 'Some name'
     }
   },
   {
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "email",
-      content: "Some email"
+      type: 'email',
+      content: 'Some email'
     }
   },
   {
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "phone",
-      content: "Some phone"
+      type: 'phone',
+      content: 'Some phone'
     }
   },
   {
     id: shortid.generate(),
     type: SIDEBAR_ITEM,
     component: {
-      type: "image",
-      content: "Some image"
+      type: 'image',
+      data: { url: 'https://random.imagecdn.app/150/150' }
     }
   }
 ];

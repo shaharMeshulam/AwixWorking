@@ -1,12 +1,12 @@
-export function Text({ content, style, update }) {
-    const newStyle = {...style};
-    newStyle.fontSize = `${newStyle.fontSize}px`; 
+export function Text({ data, style, update }) {
+    const newStyle = { ...style };
+    newStyle.fontSize = `${newStyle.fontSize}px`;
     function onBodyChange({ target }) {
-        update('content', target.innerText);
+        update('data', { txt: target.innerText });
     }
     return (
         <div className="text" contentEditable="true" onKeyUp={onBodyChange} suppressContentEditableWarning={true} style={newStyle}>
-            {content}
+            {data.txt}
         </div>
     )
 }

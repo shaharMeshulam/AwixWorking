@@ -27,12 +27,12 @@ export function DropZone({ data, onDrop, isLast, className, accept = ACCEPTS }) 
       const splitItemPath = itemPath.split("-");
 
       // limit columns when dragging from one row to another row
-      const dropZonePathRowIndex = splitDropZonePath[0];
-      const itemPathRowIndex = splitItemPath[0];
-      const diffRow = dropZonePathRowIndex !== itemPathRowIndex;
+      // const dropZonePathRowIndex = splitDropZonePath[0];
+      // const itemPathRowIndex = splitItemPath[0];
+      // const diffRow = dropZonePathRowIndex !== itemPathRowIndex;
       if (
-        diffRow &&
-        splitDropZonePath.length === 2 &&
+        // diffRow &&
+        // splitDropZonePath.length === 2 &&
         data.childrenCount >= 4
       ) {
         return false;
